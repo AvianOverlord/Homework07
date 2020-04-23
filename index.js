@@ -1,3 +1,6 @@
+const fs = require("fs");
+const inquirer = require("inquirer");
+
 
 // -- They give us an ARRAY called 'questions' What could we do with this (?) -- //
 const questions = [
