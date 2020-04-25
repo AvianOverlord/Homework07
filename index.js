@@ -72,7 +72,7 @@ function init() {
         const projectTitle = data.title;
         const projectDesc = data.description;
         const projectLic = data.license;
-        const options = data.sections;
+        const options = data.sections.values();
         let gitPresent;
 
         if(data.git === "Yes")
@@ -88,8 +88,9 @@ function init() {
         const extraQuestions = [];
         for(let i = 0; i < optionalQuestions.length; i++)
         {
-            const questionName = optionalQuestions[i].name;
-            if(options.findIndex(questionName.toLowerCase()) !== -1)
+            let questionName = optionalQuestions[i].name;
+            questionName = questionName.toLowerCase();
+            if(options.contains(questionName))
             {
                 extraQuestions.push(optionalQuestions[i]);
             }
