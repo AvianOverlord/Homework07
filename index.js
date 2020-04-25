@@ -28,6 +28,23 @@ const questions = [
     }
 ];
 
+const optionalQuestions = [
+    {
+        type: "input",
+        name: "installation",
+        message: "Enter installation instructions:"
+    },
+    {
+        type: "input",
+        name: "usage",
+        message: "Enter usage instructions:"
+    },
+    {
+        type: "input",
+        name: "contributing",
+        message: "Enter contributing instructions:"
+    }
+];
 // -- They give us a writeToFile() FUNCTION, Looks like we may need to read/write to a file. What BUILT-IN node module will help us out with this (?) -- // 
 function writeToFile(fileName, data) {
 }
