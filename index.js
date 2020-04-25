@@ -25,7 +25,7 @@ const questions = [
         type: "input",
         name: "license",
         message: "What is the license of this project?"
-    },
+    },  
     {
         type: "checkbox",
         name: "sections",
@@ -72,7 +72,8 @@ function init() {
         const projectTitle = data.title;
         const projectDesc = data.description;
         const projectLic = data.license;
-        const options = data.sections.values();
+        let options = data.sections;
+
         let gitPresent;
 
         if(data.git === "Yes")
@@ -90,7 +91,7 @@ function init() {
         {
             let questionName = optionalQuestions[i].name;
             questionName = questionName.toLowerCase();
-            if(options.contains(questionName))
+            if(options.includes(questionName))
             {
                 extraQuestions.push(optionalQuestions[i]);
             }
