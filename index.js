@@ -11,6 +11,12 @@ const questions = [
         message: "What is the title of your project?"
     },
     {
+        type: "list",
+        name: "git",
+        message: "Does this project have a git repository?",
+        choices: ["Yes","No"]
+    },
+    {
         type: "input",
         name: "description",
         message: "Enter a description of your project."
@@ -67,17 +73,36 @@ function init() {
         const projectDesc = data.description;
         const projectLic = data.license;
         const options = data.sections;
+        let gitPresent;
+
+        if(data.git === "Yes")
+        {
+            gitPresent = true;
+        }
+        else
+        {
+            gitPresent = false;
+        }
 
         //Code for asking the optional questions
         const extraQuestions = [];
-        optionalQuestions.map(question => {
-            const questionName = question.name.replace(question.name.charAt(0),questions.name.toUpperCase().charAt(0));
-            if(options.findIndex(questionName) !== -1)
+        for(let i = 0; i < optionalQuestions.length; i++)
+        {
+            const questionName = optionalQuestions[i].name;
+            if(options.findIndex(questionName.toLowerCase()) !== -1)
             {
-                extraQuestions.push(questionName)
+                extraQuestions.push(optionalQuestions[i]);
             }
-
-        });
+        }
+        if(gitPresent)
+        {
+            const gitQuestion = {
+                type: "input",
+                name: "gitUsername",
+                message: "What is your github user name?"
+            };
+            extraQuestions.push(gitQuestion);
+        }
         inquirer.prompt(extraQuestions).then(extraData => {
             //Title is on top
             let docText = "";
@@ -109,6 +134,8 @@ function init() {
                 docText += `Contribution instructions: \r\n ${extraData.contributing} \r\n`;
             }
 
+            docText += `License: \r\n ${projectLic}\r\n`;
+
             if(options.includes("Tests"))
             {
                 docText += `Tests: \r\n ${extraData.tests} \r\n`;
@@ -119,8 +146,16 @@ function init() {
                 docText += `Questions: \r\n ${questions} \r\n`;
             }
 
-            docText += `License: \r\n ${projectLic}\r\n`;
-            writeToFile(`${projectTitle}.doc`,docText);
+            if(gitPresent)
+            {
+                axios.get(`https://api.github.com/users/${extraData.gitUsername}`).then(gitPull =>{
+                    console.log(gitPull);
+                });
+            }
+            else
+            {
+                writeToFile(`${projectTitle}.doc`,docText);
+            }
         })
     });
 }
