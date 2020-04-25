@@ -8,7 +8,8 @@ const questions = [
     {
         type: "input",
         name:"title",
-        message: "What is the title of your project?"
+        message: "What is the title of your project?",
+        default: "New Project"
     },
     {
         type: "list",
@@ -19,12 +20,14 @@ const questions = [
     {
         type: "input",
         name: "description",
-        message: "Enter a description of your project."
+        message: "Enter a description of your project.",
+        default: "It does stuff."
     },
     {
         type: "input",
         name: "license",
-        message: "What is the license of this project?"
+        message: "What is the license of this project?",
+        default: "I dunno."
     },  
     {
         type: "checkbox",
@@ -58,12 +61,13 @@ const optionalQuestions = [
     {
         type: "inqut",
         name: "questions",
-        message: "Enter your questions:"
+        message: "Enter your contact information:"
     }
 ];
 // -- They give us a writeToFile() FUNCTION, Looks like we may need to read/write to a file. What BUILT-IN node module will help us out with this (?) -- // 
 function writeToFile(fileName, data) {
     fs.writeFile(fileName,data);
+    return;
 }
 
 // -- This is a fairly common programming construct. They are just giving us a FUNCTION to INITIALIZE or SETUP our project parameter. It's also where we usually kick off our project flow -- //
@@ -90,7 +94,7 @@ function init() {
         for(let i = 0; i < optionalQuestions.length; i++)
         {
             let questionName = optionalQuestions[i].name;
-            questionName = questionName.toLowerCase();
+            questionName = (questionName.charAt(0).toUpperCase() + questionName.slice(1));
             if(options.includes(questionName))
             {
                 extraQuestions.push(optionalQuestions[i]);
@@ -108,57 +112,60 @@ function init() {
         inquirer.prompt(extraQuestions).then(extraData => {
             //Title is on top
             let docText = "";
-            docText += `${projectTitle}\r\n`;
+            docText += `${projectTitle}\n\n`;
 
             //Followed by the TOC
-            docText += `Table of Contents: \r\n -Description \r\n`;
+            docText += `Table of Contents: \n-Description \n`;
             options.map(option =>{
-                docText += `-${option}\r\n`;
+                docText += `-${option}\n`;
             });
-            docText += `-License \r\n`;
-            docText += `\r\n`;
+            docText += `-License \n`;
+            docText += `\n`;
 
             //And a description
-            docText += `Description: ${projectDesc}\r\n`;
+            docText += `Description:\n${projectDesc}\n\n`;
 
             if(options.includes("Installation"))
             {
-                docText += `Installation instructions: \r\n ${extraData.installation}\r\n`;
+                docText += `Installation instructions:\n${extraData.installation}\n\n`;
             };
 
             if(options.includes("Usage"))
             {
-                docText += `Usage instructions: \r\n ${extraData.usage}\r\n`;
+                docText += `Usage instructions:\n${extraData.usage}\n\n`;
             }
 
             if(options.includes("Contributing"))
             {
-                docText += `Contribution instructions: \r\n ${extraData.contributing} \r\n`;
+                docText += `Contribution instructions:\n${extraData.contributing}\n\n`;
             }
 
-            docText += `License: \r\n ${projectLic}\r\n`;
+            docText += `License:\n${projectLic}\n\n`;
 
             if(options.includes("Tests"))
             {
-                docText += `Tests: \r\n ${extraData.tests} \r\n`;
+                docText += `Tests:\n${extraData.tests}\n\n`;
             }
 
             if(options.includes("Questions"))
             {
-                docText += `Questions: \r\n ${questions} \r\n`;
+                docText += `Questions:\n${extraData.questions}\n\n`;
             }
 
             if(gitPresent)
             {
                 axios.get(`https://api.github.com/users/${extraData.gitUsername}`).then(gitPull =>{
-                    console.log(gitPull);
+                    docText += `GitHub Contact information: \n${gitPull.data.avatar_url}\n${gitPull.data.url}`;
+                    console.log(docText);
+                    writeToFile(`README.md`, docText);
                 });
             }
             else
             {
-                writeToFile(`${projectTitle}.doc`,docText);
+                console.log(docText);
+                writeToFile(`README.md`, docText);
             }
-        })
+        });
     });
 }
 
